@@ -30,9 +30,12 @@
 #include "mozilla/Services.h"
 #include "base/message_loop.h"
 
+// Todo kitkat
+#ifdef MOZ_B2G_BT
 #include "BluetoothCommon.h"
 #include "BluetoothProfileManagerBase.h"
 #include "BluetoothHfpManager.h"
+#endif
 
 #include "nsJSUtils.h"
 #include "nsCxPusher.h"
@@ -44,7 +47,10 @@ using namespace mozilla::dom::gonk;
 using namespace android;
 using namespace mozilla::hal;
 using namespace mozilla;
+// Todo kitkat
+#ifdef MOZ_B2G_BT
 using namespace mozilla::dom::bluetooth;
+#endif
 
 #define LOG(args...)  __android_log_print(ANDROID_LOG_INFO, "AudioManager" , ## args)
 
@@ -283,6 +289,7 @@ AudioManager::Observe(nsISupports* aSubject,
                       const char* aTopic,
                       const char16_t* aData)
 {
+#ifdef MOZ_B2G_BT
   if ((strcmp(aTopic, BLUETOOTH_SCO_STATUS_CHANGED_ID) == 0) ||
       (strcmp(aTopic, BLUETOOTH_HFP_STATUS_CHANGED_ID) == 0) ||
       (strcmp(aTopic, BLUETOOTH_A2DP_STATUS_CHANGED_ID) == 0)) {
@@ -298,7 +305,9 @@ AudioManager::Observe(nsISupports* aSubject,
 
   // To process the volume control on each audio channel according to
   // change of settings
-  else if (!strcmp(aTopic, MOZ_SETTINGS_CHANGE_ID)) {
+  else 
+#endif
+  if (!strcmp(aTopic, MOZ_SETTINGS_CHANGE_ID)) {
     AutoSafeJSContext cx;
     nsDependentString dataStr(aData);
     JS::Rooted<JS::Value> val(cx);
@@ -415,6 +424,8 @@ AudioManager::AudioManager()
 
   nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
   NS_ENSURE_TRUE_VOID(obs);
+// Todo kitkat
+#ifdef MOZ_B2G_BT
   if (NS_FAILED(obs->AddObserver(this, BLUETOOTH_SCO_STATUS_CHANGED_ID, false))) {
     NS_WARNING("Failed to add bluetooth sco status changed observer!");
   }
@@ -424,6 +435,7 @@ AudioManager::AudioManager()
   if (NS_FAILED(obs->AddObserver(this, BLUETOOTH_HFP_STATUS_CHANGED_ID, false))) {
     NS_WARNING("Failed to add bluetooth hfp status changed observer!");
   }
+#endif
   if (NS_FAILED(obs->AddObserver(this, MOZ_SETTINGS_CHANGE_ID, false))) {
     NS_WARNING("Failed to add mozsettings-changed observer!");
   }
@@ -442,6 +454,8 @@ AudioManager::~AudioManager() {
 
   nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
   NS_ENSURE_TRUE_VOID(obs);
+// Todo kitkat
+#ifdef MOZ_B2G_BT
   if (NS_FAILED(obs->RemoveObserver(this, BLUETOOTH_SCO_STATUS_CHANGED_ID))) {
     NS_WARNING("Failed to remove bluetooth sco status changed observer!");
   }
@@ -451,6 +465,7 @@ AudioManager::~AudioManager() {
   if (NS_FAILED(obs->RemoveObserver(this, BLUETOOTH_HFP_STATUS_CHANGED_ID))) {
     NS_WARNING("Failed to remove bluetooth hfp status changed observer!");
   }
+#endif
   if (NS_FAILED(obs->RemoveObserver(this, MOZ_SETTINGS_CHANGE_ID))) {
     NS_WARNING("Failed to remove mozsettings-changed observer!");
   }
