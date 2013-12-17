@@ -823,9 +823,10 @@ nsAppShell::Init()
     if (XRE_GetProcessType() == GeckoProcessType_Default) {
 #ifdef MOZ_OMX_DECODER
         android::MediaResourceManagerService::instantiate();
-#endif
+// Todo kitkat
 #if ANDROID_VERSION >= 18
         android::FakeSurfaceComposer::instantiate();
+#endif
 #endif
         GonkPermissionService::instantiate();
     }

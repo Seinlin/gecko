@@ -216,7 +216,9 @@ GrallocTextureClientOGL::AllocateForSurface(gfx::IntSize aSize,
     format = android::PIXEL_FORMAT_RGB_565;
     break;
   case gfx::FORMAT_A8:
-    format = android::PIXEL_FORMAT_A_8;
+    //todo gonk-kk
+    //format = android::PIXEL_FORMAT_A_8;
+    format = HAL_PIXEL_FORMAT_sRGB_A_8888;
     break;
   default:
     NS_WARNING("Unsupported surface format");

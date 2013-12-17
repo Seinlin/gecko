@@ -18,7 +18,7 @@ SOURCES += [
     'BootAnimation.cpp',
 ]
 
-if CONFIG['ANDROID_VERSION'] >= '18':
+if CONFIG['ANDROID_VERSION'] in ('18', '19'):
     SOURCES += [
         'FramebufferSurface.cpp',
         'GonkDisplayJB.cpp',

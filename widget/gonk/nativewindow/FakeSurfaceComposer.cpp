@@ -59,6 +59,10 @@ sp<IBinder> FakeSurfaceComposer::createDisplay(const String8& displayName,
     return nullptr;
 }
 
+void FakeSurfaceComposer::destroyDisplay(const sp<IBinder>& display)
+{
+}
+
 sp<IBinder> FakeSurfaceComposer::getBuiltInDisplay(int32_t id) {
     return nullptr;
 }
@@ -88,6 +92,13 @@ status_t FakeSurfaceComposer::captureScreen(const sp<IBinder>& display,
         uint32_t reqWidth, uint32_t reqHeight,
         uint32_t minLayerZ, uint32_t maxLayerZ,
         bool isCpuConsumer) {
+    return INVALID_OPERATION;
+}
+
+status_t FakeSurfaceComposer::captureScreen(const sp<IBinder>& display, 
+    const sp<IGraphicBufferProducer>& producer,
+    uint32_t reqWidth, uint32_t reqHeight,
+    uint32_t minLayerZ, uint32_t maxLayerZ) {
     return INVALID_OPERATION;
 }
 

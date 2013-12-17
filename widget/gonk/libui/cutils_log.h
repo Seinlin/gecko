@@ -37,8 +37,14 @@
 #endif
 #include <stdarg.h>
 
+// Todo kitkat
+#if 1
+#include <log/uio.h>
+#include <log/logd.h>
+#else
 #include <cutils/uio.h>
 #include <cutils/logd.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -460,6 +466,7 @@ extern "C" {
  * Event logging.
  */
 
+#if 0 // Todo kitkat
 /*
  * Event log entry types.  These must match up with the declarations in
  * java/android/android/util/EventLog.java.
@@ -471,6 +478,16 @@ typedef enum {
     EVENT_TYPE_LIST     = 3,
 } AndroidEventLogType;
 
+typedef enum {
+    LOG_ID_MAIN = 0,
+    LOG_ID_RADIO = 1,
+    LOG_ID_EVENTS = 2,
+    LOG_ID_SYSTEM = 3,
+
+    LOG_ID_MAX
+} log_id_t;
+
+#endif
 
 #ifndef LOG_EVENT_INT
 #define LOG_EVENT_INT(_tag, _value) {                                       \
@@ -539,15 +556,6 @@ typedef enum {
 //#define android_logToCallback(func) do{}while(0)
 #define android_logToFile(tag, file) (0)
 #define android_logToFd(tag, fd) (0)
-
-typedef enum {
-    LOG_ID_MAIN = 0,
-    LOG_ID_RADIO = 1,
-    LOG_ID_EVENTS = 2,
-    LOG_ID_SYSTEM = 3,
-
-    LOG_ID_MAX
-} log_id_t;
 
 /*
  * Send a simple string to the log.

@@ -38,24 +38,35 @@ using namespace base;
 using namespace mozilla::layers;
 using namespace mozilla::gl;
 
+
 namespace IPC {
 
 void
 ParamTraits<MagicGrallocBufferHandle>::Write(Message* aMsg,
                                              const paramType& aParam)
 {
-  Flattenable *flattenable = aParam.mGraphicBuffer.get();
-  size_t nbytes = flattenable->getFlattenedSize();
-  size_t nfds = flattenable->getFdCount();
+  sp<GraphicBuffer> buffer = aParam.mGraphicBuffer;
+
+  size_t nbytes = buffer->getFlattenedSize();
+  size_t nfds = buffer->getFdCount();
 
   char data[nbytes];
   int fds[nfds];
-  flattenable->flatten(data, nbytes, fds, nfds);
+  // Make a copy of "data" and "fds" for flatten() to avoid casting problem
+  void *pdata = (void *)data;
+  int *pfds = fds;
+
+  buffer->flatten(pdata, nbytes, pfds, nfds);
+
+  // In Kitkat, flatten() will change the value of nbytes and nfds.
+  // need to change them back.
+  nbytes = buffer->getFlattenedSize();
+  nfds = buffer->getFdCount();
 
   aMsg->WriteSize(nbytes);
   aMsg->WriteSize(nfds);
-
   aMsg->WriteBytes(data, nbytes);
+
   for (size_t n = 0; n < nfds; ++n) {
     // These buffers can't die in transit because they're created
     // synchonously and the parent-side buffer can only be dropped if
@@ -96,9 +107,12 @@ ParamTraits<MagicGrallocBufferHandle>::Read(const Message* aMsg,
   }
 
   sp<GraphicBuffer> buffer(new GraphicBuffer());
-  Flattenable *flattenable = buffer.get();
 
-  if (NO_ERROR == flattenable->unflatten(data, nbytes, fds, nfds)) {
+  // Make a copy of "data" and "fds" for unflatten() to avoid casting problem
+  void const *pdata = (void const *)data;
+  int const *pfds = fds;
+
+  if (NO_ERROR == buffer->unflatten(pdata, nbytes, pfds, nfds)) {
     aResult->mGraphicBuffer = buffer;
     return true;
   }
@@ -128,7 +142,9 @@ ImageFormatForPixelFormat(android::PixelFormat aFormat)
     return gfxImageFormatRGB24;
   case PIXEL_FORMAT_RGB_565:
     return gfxImageFormatRGB16_565;
-  case PIXEL_FORMAT_A_8:
+  //todo gonk-kk
+  //case PIXEL_FORMAT_A_8:
+  case HAL_PIXEL_FORMAT_sRGB_A_8888:
     return gfxImageFormatA8;
   default:
     MOZ_CRASH("Unknown gralloc pixel format");
@@ -147,7 +163,9 @@ PixelFormatForImageFormat(gfxImageFormat aFormat)
   case gfxImageFormatRGB16_565:
     return android::PIXEL_FORMAT_RGB_565;
   case gfxImageFormatA8:
-    return android::PIXEL_FORMAT_A_8;
+    //todo gonk-kk
+    //return android::PIXEL_FORMAT_A_8;
+    return HAL_PIXEL_FORMAT_sRGB_A_8888;
   default:
     MOZ_CRASH("Unknown gralloc pixel format");
   }
@@ -168,7 +186,9 @@ BytesPerPixelForPixelFormat(android::PixelFormat aFormat)
   case PIXEL_FORMAT_RGBA_5551:
   case PIXEL_FORMAT_RGBA_4444:
     return 2;
-  case PIXEL_FORMAT_A_8:
+  //todo gonk-kk
+  //case PIXEL_FORMAT_A_8:
+  case HAL_PIXEL_FORMAT_sRGB_A_8888:
     return 1;
   default:
     return 0;

@@ -50,6 +50,25 @@ namespace android {
  * was adapted from the version in SurfaceFlinger
  */
 
+#if ANDROID_VERSION == 19
+FramebufferSurface::FramebufferSurface(int disp, uint32_t width, uint32_t height, uint32_t format,
+        const sp<IGraphicBufferConsumer>& consumer) :
+    ConsumerBase(consumer, true),
+    mDisplayType(disp),
+    mCurrentBufferSlot(-1),
+    mCurrentBuffer(0),
+    lastHandle(0)
+{
+    mName = "FramebufferSurface";
+    mConsumer->setConsumerName(mName);
+    mConsumer->setConsumerUsageBits(GRALLOC_USAGE_HW_FB |
+                                       GRALLOC_USAGE_HW_RENDER |
+                                       GRALLOC_USAGE_HW_COMPOSER);
+    mConsumer->setDefaultBufferFormat(format);
+    mConsumer->setDefaultBufferSize(width,  height);
+    mConsumer->setDefaultMaxBufferCount(NUM_FRAMEBUFFER_SURFACE_BUFFERS);
+}
+#else
 FramebufferSurface::FramebufferSurface(int disp, uint32_t width, uint32_t height, uint32_t format, sp<IGraphicBufferAlloc>& alloc) :
     ConsumerBase(new BufferQueue(true, alloc)),
     mDisplayType(disp),
@@ -67,12 +86,17 @@ FramebufferSurface::FramebufferSurface(int disp, uint32_t width, uint32_t height
     mBufferQueue->setSynchronousMode(true);
     mBufferQueue->setDefaultMaxBufferCount(NUM_FRAMEBUFFER_SURFACE_BUFFERS);
 }
+#endif
 
 status_t FramebufferSurface::nextBuffer(sp<GraphicBuffer>& outBuffer, sp<Fence>& outFence) {
     Mutex::Autolock lock(mMutex);
 
     BufferQueue::BufferItem item;
+#if ANDROID_VERSION == 19
+    status_t err = acquireBufferLocked(&item, 0);
+#else
     status_t err = acquireBufferLocked(&item);
+#endif
     if (err == BufferQueue::NO_BUFFER_AVAILABLE) {
         outBuffer = mCurrentBuffer;
         return NO_ERROR;
@@ -92,8 +116,13 @@ status_t FramebufferSurface::nextBuffer(sp<GraphicBuffer>& outBuffer, sp<Fence>&
     if (mCurrentBufferSlot != BufferQueue::INVALID_BUFFER_SLOT &&
         item.mBuf != mCurrentBufferSlot) {
         // Release the previous buffer.
+#if ANDROID_VERSION == 19
+        err = releaseBufferLocked(mCurrentBufferSlot, mCurrentBuffer,
+                EGL_NO_DISPLAY, EGL_NO_SYNC_KHR);
+#else
         err = releaseBufferLocked(mCurrentBufferSlot, EGL_NO_DISPLAY,
                 EGL_NO_SYNC_KHR);
+#endif
         if (err != NO_ERROR && err != BufferQueue::STALE_BUFFER_SLOT) {
             ALOGE("error releasing buffer: %s (%d)", strerror(-err), err);
             return err;
@@ -136,7 +165,11 @@ status_t FramebufferSurface::setReleaseFenceFd(int fenceFd) {
     if (fenceFd >= 0) {
         sp<Fence> fence(new Fence(fenceFd));
         if (mCurrentBufferSlot != BufferQueue::INVALID_BUFFER_SLOT) {
+#if ANDROID_VERSION == 19
+            status_t err = addReleaseFence(mCurrentBufferSlot, mCurrentBuffer,  fence);
+#else
             status_t err = addReleaseFence(mCurrentBufferSlot, fence);
+#endif
             ALOGE_IF(err, "setReleaseFenceFd: failed to add the fence: %s (%d)",
                     strerror(-err), err);
         }
@@ -157,6 +190,23 @@ status_t FramebufferSurface::compositionComplete()
 void FramebufferSurface::dump(String8& result) {
     ConsumerBase::dump(result);
 }
+// Todo kitkat
+void FramebufferSurface::dump(String8& result, const char* prefix) {
+    ConsumerBase::dump(result);
+}
+
+#if 1
+sp<IGraphicBufferConsumer> FramebufferSurface::getBufferQueue() {
+    Mutex::Autolock lock(mMutex);
+    return mConsumer;
+}
+#else
+sp<BufferQueue> FramebufferSurface::getBufferQueue() {
+    Mutex::Autolock lock(mMutex);
+    return static_cast< sp<BufferQueue> >(mConsumer);
+}
+#endif
+
 
 // ----------------------------------------------------------------------------
 }; // namespace android

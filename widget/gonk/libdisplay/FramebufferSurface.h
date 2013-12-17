@@ -34,13 +34,21 @@ class HWComposer;
 
 class FramebufferSurface : public ConsumerBase {
 public:
+// Todo kitkat
+#if ANDROID_VERSION == 19
+    FramebufferSurface(int disp, uint32_t width, uint32_t height, uint32_t format,
+	const sp<IGraphicBufferConsumer>& consumer);
+#else
     FramebufferSurface(int disp, uint32_t width, uint32_t height, uint32_t format, sp<IGraphicBufferAlloc>& alloc);
+#endif
 
     bool isUpdateOnDemand() const { return false; }
     status_t setUpdateRectangle(const Rect& updateRect);
     status_t compositionComplete();
 
     virtual void dump(String8& result);
+    // Todo kitkat
+    virtual void dump(String8& result, const char* prefix);
 
     // setReleaseFenceFd stores a fence file descriptor that will signal when the
     // current buffer is no longer being read. This fence will be returned to
@@ -49,6 +57,15 @@ public:
     // a single union fence. The SurfaceTexture will close the file descriptor
     // when finished with it.
     status_t setReleaseFenceFd(int fenceFd);
+
+    // copied from ConsumerBase of JB43
+    // getBufferQueue returns the BufferQueue object to which this
+    // ConsumerBase is connected.
+#if 1
+    sp<IGraphicBufferConsumer> getBufferQueue();
+#else
+    sp<BufferQueue> getBufferQueue();
+#endif
 
     buffer_handle_t lastHandle;
     int lastFenceFD;
