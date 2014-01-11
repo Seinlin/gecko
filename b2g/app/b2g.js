@@ -268,7 +268,7 @@ pref("layers.offmainthreadcomposition.async-animations", true);
 pref("layers.async-video.enabled", true);
 pref("layers.async-pan-zoom.enabled", true);
 pref("gfx.content.azure.backends", "cairo");
-pref("layers.composer2d.enabled", true);
+pref("layers.composer2d.enabled", false);
 #endif
 
 // Web Notifications
