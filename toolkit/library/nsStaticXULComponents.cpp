@@ -240,6 +240,7 @@
     GIO_MODULE                               \
     SYNTH_PICO_MODULE                        \
     MODULE(DiskSpaceWatcherModule)           \
+    MODULE(NetworkWorkerModule)              \
     /* end of list */
 
 #define MODULE(_name) \

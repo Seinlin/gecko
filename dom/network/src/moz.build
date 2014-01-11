@@ -6,6 +6,7 @@
 
 EXPORTS.mozilla.dom.network += [
     'Constants.h',
+    'NetUtils.h',
     'TCPServerSocketChild.h',
     'TCPServerSocketParent.h',
     'TCPSocketChild.h',
@@ -17,6 +18,7 @@ EXPORTS.mozilla.dom.network += [
 
 UNIFIED_SOURCES += [
     'Connection.cpp',
+    'NetUtils.cpp',
     'TCPServerSocketChild.cpp',
     'TCPServerSocketParent.cpp',
     'TCPSocketChild.cpp',

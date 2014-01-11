@@ -49,14 +49,18 @@ function debug(msg) {
  */
 function NetworkService() {
   if(DEBUG) debug("Starting net_worker.");
-  this.worker = new ChromeWorker("resource://gre/modules/net_worker.js");
-  this.worker.onmessage = this.handleWorkerMessage.bind(this);
-  this.worker.onerror = function onerror(event) {
-    if(DEBUG) debug("Received error from worker: " + event.filename + 
-                    ":" + event.lineno + ": " + event.message + "\n");
-    // Prevent the event from bubbling any further.
-    event.preventDefault();
-  };
+  let networkWorker = Cc["@mozilla.org/network/worker;1"];
+  var self = this;
+  if (networkWorker) {
+    let networkListener = {
+      onEvent: function(event) {
+        self.handleWorkerMessage(event);
+      }
+    };
+
+    this.worker = networkWorker.getService(Ci.nsINetworkWorker);
+    this.worker.start(networkListener);
+  }
 
   // Callbacks to invoke when a reply arrives from the net_worker.
   this.controlCallbacks = Object.create(null);
@@ -88,11 +92,10 @@ NetworkService.prototype = {
     this.worker.postMessage(params);
   },
 
-  handleWorkerMessage: function handleWorkerMessage(e) {
-    if(DEBUG) debug("NetworkManager received message from worker: " + JSON.stringify(e.data));
-    let response = e.data;
+  handleWorkerMessage: function handleWorkerMessage(response) {
+    if(DEBUG) debug("NetworkManager received message from worker: " + JSON.stringify(response));
     let id = response.id;
-    if (id === 'broadcast') {
+    if (response.broadcast === true) {
       Services.obs.notifyObservers(null, response.topic, response.reason);
       return;
     }
@@ -446,8 +449,10 @@ NetworkService.prototype = {
     let params = {
       cmd: "updateUpStream",
       isAsync: true,
-      previous: previous,
-      current: current
+      preInternalIfname: previous.internalIfname,
+      preExternalIfname: previous.externalIfname,
+      curInternalIfname: current.internalIfname,
+      curExternalIfname: current.externalIfname,
     };
 
     this.controlMessage(params, function (data) {

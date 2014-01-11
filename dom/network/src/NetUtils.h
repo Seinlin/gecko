@@ -33,6 +33,17 @@ public:
                            in_addr_t dns1,
                            in_addr_t dns2);
   int32_t do_ifc_reset_connections(const char *ifname, const int32_t resetMask);
+  int32_t do_ifc_set_default_route(const char *ifname, in_addr_t gateway);
+  int32_t do_ifc_add_route(const char *ifname,
+                           const char *dst,
+                           uint32_t prefixLength,
+                           const char *gateway);
+  int32_t do_ifc_remove_route(const char *ifname,
+                              const char *dst,
+                              uint32_t prefixLength,
+                              const char *gateway);
+  int32_t do_ifc_remove_host_routes(const char *ifname);
+  int32_t do_ifc_remove_default_route(const char *ifname);
   int32_t do_dhcp_stop(const char *ifname);
   int32_t do_dhcp_do_request(const char *ifname,
                              char *ipaddr,
