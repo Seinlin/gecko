@@ -476,3 +476,11 @@ SettingsListener.observe("layers.draw-borders", false, function(value) {
 SettingsListener.observe("layers.composer2d.enabled", true, function(value) {
   Services.prefs.setBoolPref("layers.composer2d.enabled", value);
 });
+
+// ================ Accessibility ============
+SettingsListener.observe("accessibility.screenreader", false, function(value) {
+  if (value) {
+    Cu.import('resource://gre/modules/accessibility/AccessFu.jsm');
+    AccessFu.attach(window);
+  }
+});
