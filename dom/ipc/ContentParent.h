@@ -268,10 +268,11 @@ private:
     // The common initialization for the constructors.
     void InitializeMembers();
 
-    // The common initialization logic shared by all constuctors.
+    // The common initialization logic shared by both constuctors.
     void InitInternal(ProcessPriority aPriority,
                       bool aSetupOffMainThreadCompositing,
-                      bool aSendRegisteredChrome);
+                      bool aSendRegisteredChrome,
+                      bool aMinimizeMemory);
 
     virtual ~ContentParent();
 

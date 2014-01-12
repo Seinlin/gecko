@@ -796,7 +796,7 @@ ContentParent::MaybeTakeCPUWakeLock(Element* aFrameElement)
 bool
 ContentParent::SetPriorityAndCheckIsAlive(ProcessPriority aPriority)
 {
-    ProcessPriorityManager::SetProcessPriority(this, aPriority);
+    ProcessPriorityManager::SetProcessPriority(this, aPriority, true);
 
     // Now that we've set this process's priority, check whether the process is
     // still alive.  Hopefully we've set the priority to FOREGROUND*, so the
@@ -1279,7 +1279,8 @@ ContentParent::ContentParent(mozIApplication* aApp,
 
     InitInternal(aInitialPriority,
                  true, /* Setup off-main thread compositing */
-                 true  /* Send registered chrome */);
+                 true,  /* Send registered chrome */
+                 true  /* Minimize memory */ );
 }
 
 #ifdef MOZ_NUWA_PROCESS
@@ -1351,7 +1352,8 @@ ContentParent::ContentParent(ContentParent* aTemplate,
 
     InitInternal(priority,
                  false, /* Setup Off-main thread compositing */
-                 false  /* Send registered chrome */);
+                 false,  /* Send registered chrome */
+                 false /* Don't minimize memory */ );
 }
 #endif  // MOZ_NUWA_PROCESS
 
@@ -1384,7 +1386,8 @@ ContentParent::~ContentParent()
 void
 ContentParent::InitInternal(ProcessPriority aInitialPriority,
                             bool aSetupOffMainThreadCompositing,
-                            bool aSendRegisteredChrome)
+                            bool aSendRegisteredChrome,
+                            bool aMinimizeMemory)
 {
     // Set the subprocess's priority.  We do this early on because we're likely
     // /lowering/ the process's CPU and memory priority, which it has inherited
@@ -1392,7 +1395,9 @@ ContentParent::InitInternal(ProcessPriority aInitialPriority,
     //
     // This call can cause us to send IPC messages to the child process, so it
     // must come after the Open() call above.
-    ProcessPriorityManager::SetProcessPriority(this, aInitialPriority);
+    ProcessPriorityManager::SetProcessPriority(this,
+                                               aInitialPriority,
+                                               aMinimizeMemory);
 
     if (aSetupOffMainThreadCompositing) {
         // NB: internally, this will send an IPC message to the child
@@ -1424,7 +1429,7 @@ ContentParent::InitInternal(ProcessPriority aInitialPriority,
 
     mMessageManager = nsFrameMessageManager::NewProcessMessageManager(this);
 
-    if (gAppData) {
+    if (gAppData && aSendRegisteredChrome) {
         nsCString version(gAppData->version);
         nsCString buildID(gAppData->buildID);
         nsCString name(gAppData->name);
@@ -1435,7 +1440,7 @@ ContentParent::InitInternal(ProcessPriority aInitialPriority,
     }
 
     nsStyleSheetService *sheetService = nsStyleSheetService::GetInstance();
-    if (sheetService) {
+    if (sheetService && aSendRegisteredChrome) {
         // This looks like a lot of work, but in a normal browser session we just
         // send two loads.
 

@@ -127,6 +127,7 @@ public:
    */
   void SetProcessPriority(ContentParent* aContentParent,
                           ProcessPriority aPriority,
+                          bool aMinimizeMemory,
                           uint32_t aBackgroundLRU = 0);
 
   /**
@@ -263,10 +264,12 @@ public:
    * ComputeCPUPriority()).
    */
   void SetPriorityNow(ProcessPriority aPriority,
+                      bool aMinimizeMemory,
                       uint32_t aBackgroundLRU = 0);
 
   void SetPriorityNow(ProcessPriority aPriority,
                       ProcessCPUPriority aCPUPriority,
+                      bool aMinimizeMemory,
                       uint32_t aBackgroundLRU = 0);
 
   void ShutDown();
@@ -466,12 +469,13 @@ ProcessPriorityManagerImpl::GetParticularProcessPriorityManager(
 void
 ProcessPriorityManagerImpl::SetProcessPriority(ContentParent* aContentParent,
                                                ProcessPriority aPriority,
+                                               bool aMinimizeMemory,
                                                uint32_t aBackgroundLRU)
 {
   MOZ_ASSERT(aContentParent);
   nsRefPtr<ParticularProcessPriorityManager> pppm =
     GetParticularProcessPriorityManager(aContentParent);
-  pppm->SetPriorityNow(aPriority, aBackgroundLRU);
+  pppm->SetPriorityNow(aPriority, aMinimizeMemory, aBackgroundLRU);
 }
 
 void
@@ -812,13 +816,13 @@ ParticularProcessPriorityManager::ResetPriority()
     return;
   }
 
-  SetPriorityNow(processPriority);
+  SetPriorityNow(processPriority, true);
 }
 
 void
 ParticularProcessPriorityManager::ResetPriorityNow()
 {
-  SetPriorityNow(ComputePriority());
+  SetPriorityNow(ComputePriority(), true);
 }
 
 void
@@ -943,19 +947,21 @@ ParticularProcessPriorityManager::ComputeCPUPriority()
 void
 ParticularProcessPriorityManager::ResetCPUPriorityNow()
 {
-  SetPriorityNow(mPriority);
+  SetPriorityNow(mPriority, true);
 }
 
 void
 ParticularProcessPriorityManager::SetPriorityNow(ProcessPriority aPriority,
+                                                 bool aMinimizeMemory,
                                                  uint32_t aBackgroundLRU)
 {
-  SetPriorityNow(aPriority, ComputeCPUPriority(), aBackgroundLRU);
+  SetPriorityNow(aPriority, ComputeCPUPriority(), aMinimizeMemory, aBackgroundLRU);
 }
 
 void
 ParticularProcessPriorityManager::SetPriorityNow(ProcessPriority aPriority,
                                                  ProcessCPUPriority aCPUPriority,
+                                                 bool aMinimizeMemory,
                                                  uint32_t aBackgroundLRU)
 {
   if (aPriority == PROCESS_PRIORITY_UNKNOWN) {
@@ -1018,7 +1024,7 @@ ParticularProcessPriorityManager::SetPriorityNow(ProcessPriority aPriority,
 
   if (aPriority >= PROCESS_PRIORITY_FOREGROUND) {
     unused << mContentParent->SendCancelMinimizeMemoryUsage();
-  } else {
+  } else if (aMinimizeMemory) {
     unused << mContentParent->SendMinimizeMemoryUsage();
   }
 
@@ -1368,14 +1374,15 @@ ProcessPriorityManager::Init()
 
 /* static */ void
 ProcessPriorityManager::SetProcessPriority(ContentParent* aContentParent,
-                                           ProcessPriority aPriority)
+                                           ProcessPriority aPriority,
+                                           bool aMinimizeMemory)
 {
   MOZ_ASSERT(aContentParent);
 
   ProcessPriorityManagerImpl* singleton =
     ProcessPriorityManagerImpl::GetSingleton();
   if (singleton) {
-    singleton->SetProcessPriority(aContentParent, aPriority);
+    singleton->SetProcessPriority(aContentParent, aPriority, aMinimizeMemory);
   }
 }
 

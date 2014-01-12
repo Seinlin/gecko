@@ -169,6 +169,7 @@ public:
      * on the critical path.
      */
     static void PreloadSlowThings();
+    static void PreloadSlowThings2();
 
     /** Return a TabChild with the given attributes. */
     static already_AddRefed<TabChild>

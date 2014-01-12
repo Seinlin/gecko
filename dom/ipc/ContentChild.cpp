@@ -1350,6 +1350,12 @@ PreloadSlowThings()
 
 }
 
+static void
+PreloadSlowThings2()
+{
+    TabChild::PreloadSlowThings2();
+}
+
 bool
 ContentChild::RecvAppInfo(const nsCString& version, const nsCString& buildID,
                           const nsCString& name, const nsCString& UAName)
@@ -1368,17 +1374,23 @@ ContentChild::RecvAppInfo(const nsCString& version, const nsCString& buildID,
     // PreloadSlowThings() may set the docshell of the first TabChild
     // inactive, and we can only safely restore it to active from
     // BrowserElementChild.js.
-    if ((mIsForApp || mIsForBrowser)
+    if (mIsForApp || mIsForBrowser) {
 #ifdef MOZ_NUWA_PROCESS
-        && !IsNuwaProcess()
+        if (IsNuwaProcess()) {
+            PreloadSlowThings();
+        } else {
+            PreloadSlowThings2();
+        }
+#else
+        // Calling PreloadSlowThings2 will make PreloadSlowThings called.
+        PreloadSlowThings2();
 #endif
-       ) {
-        PreloadSlowThings();
     }
 
 #ifdef MOZ_NUWA_PROCESS
     if (IsNuwaProcess()) {
         ContentChild::GetSingleton()->RecvGarbageCollect();
+        nsJSContext::CycleCollectNow();
         MessageLoop::current()->PostTask(
             FROM_HERE, NewRunnableFunction(OnFinishNuwaPreparation));
     }

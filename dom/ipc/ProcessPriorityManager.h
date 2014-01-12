@@ -57,7 +57,8 @@ public:
    * overwritten by the process priority manager.
    */
   static void SetProcessPriority(dom::ContentParent* aContentParent,
-                                 hal::ProcessPriority aPriority);
+                                 hal::ProcessPriority aPriority,
+                                 bool aMinimizeMemory);
 
   /**
    * Returns true iff this process's priority is FOREGROUND*.

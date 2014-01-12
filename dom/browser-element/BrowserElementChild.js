@@ -8,6 +8,7 @@ let { classes: Cc, interfaces: Ci, results: Cr, utils: Cu }  = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Geometry.jsm");
+Cu.import("resource://gre/modules/BrowserElementPromptService.jsm");
 
 function debug(msg) {
   //dump("BrowserElementChild - " + msg + "\n");
@@ -62,5 +63,12 @@ if (!('BrowserElementIsPreloaded' in this)) {
 } else {
   ContentPanning.init();
 }
+
+BrowserElementPromptService.mapWindowToBrowserElementChild(content, this);
+
+// This is necessary to get security web progress notifications.
+var securityUI = Cc['@mozilla.org/secure_browser_ui;1']
+      .createInstance(Ci.nsISecureBrowserUI);
+securityUI.init(content);
 
 var BrowserElementIsReady = true;

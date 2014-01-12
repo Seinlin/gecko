@@ -140,8 +140,6 @@ BrowserElementChild.prototype = {
   _init: function() {
     debug("Starting up.");
 
-    BrowserElementPromptService.mapWindowToBrowserElementChild(content, this);
-
     docShell.QueryInterface(Ci.nsIWebProgress)
             .addProgressListener(this._progressListener,
                                  Ci.nsIWebProgress.NOTIFY_LOCATION |
@@ -151,11 +149,6 @@ BrowserElementChild.prototype = {
     docShell.QueryInterface(Ci.nsIWebNavigation)
             .sessionHistory = Cc["@mozilla.org/browser/shistory;1"]
                                 .createInstance(Ci.nsISHistory);
-
-    // This is necessary to get security web progress notifications.
-    var securityUI = Cc['@mozilla.org/secure_browser_ui;1']
-                       .createInstance(Ci.nsISecureBrowserUI);
-    securityUI.init(content);
 
     // A cache of the menuitem dom objects keyed by the id we generate
     // and pass to the embedder

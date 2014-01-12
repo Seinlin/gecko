@@ -243,6 +243,21 @@ TabChild::PreloadSlowThings()
     ClearOnShutdown(&sPreallocatedTab);
 }
 
+/* static */ void
+TabChild::PreloadSlowThings2()
+{
+    // If sPreallocatedTab does not exist, it means first preload stage hasn't
+    // done.
+    if (!sPreallocatedTab) {
+        PreloadSlowThings();
+    }
+
+    // Load, compile, and run these scripts.
+    sPreallocatedTab->RecvLoadRemoteScript(
+        NS_LITERAL_STRING("chrome://global/content/preload2.js"));
+        //NS_LITERAL_STRING("chrome://global/content/preload2.js"), true);
+}
+
 /*static*/ already_AddRefed<TabChild>
 TabChild::Create(ContentChild* aManager, const TabContext &aContext, uint32_t aChromeFlags)
 {
