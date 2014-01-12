@@ -9,9 +9,7 @@ if CONFIG['MOZ_ENABLE_XREMOTE']:
     PARALLEL_DIRS += ['remote']
 
 PARALLEL_DIRS += [
-    'aboutmemory',
     'alerts',
-    'apppicker',
     'commandlines',
     'console',
     'contentprefs',
@@ -19,13 +17,11 @@ PARALLEL_DIRS += [
     'diskspacewatcher',
     'downloads',
     'exthelper',
-    'filepicker',
     'finalizationwitness',
     'find',
     'intl',
     'jsdownloads',
     'mediasniffer',
-    'microformats',
     'osfile',
     'parentalcontrols',
     'passwordmgr',
@@ -37,13 +33,21 @@ PARALLEL_DIRS += [
     'startup',
     'statusfilter',
     'telemetry',
-    'thumbnails',
     'typeaheadfind',
     'urlformatter',
     'viewconfig',
     'viewsource',
     'workerloader',
 ]
+
+if not CONFIG['MOZ_B2G']:
+    PARALLEL_DIRS += [
+        'aboutmemory',
+        'apppicker',
+        'filepicker',
+        'microformats',
+        'thumbnails'
+    ]
 
 if CONFIG['MOZ_SOCIAL']:
     PARALLEL_DIRS += ['social']

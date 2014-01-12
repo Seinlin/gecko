@@ -17,7 +17,6 @@ PARALLEL_DIRS += [
     'mozapps/handling',
     'mozapps/preferences',
     'mozapps/plugins',
-    'obsolete',
     'profile',
     'themes',
     'webapps',
@@ -29,6 +28,9 @@ if CONFIG['MOZ_MAINTENANCE_SERVICE']:
     DIRS += ['components/maintenanceservice']
 
 DIRS += ['xre']
+
+if not CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
+    PARALLEL_DIRS += ['obsolete']
 
 if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk2', 'gtk3', 'qt'):
     PARALLEL_DIRS += ['system/unixproxy']

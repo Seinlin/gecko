@@ -12,10 +12,11 @@ XPIDL_SOURCES += [
 
 XPIDL_MODULE = 'alerts'
 
-UNIFIED_SOURCES += [
-    'nsAlertsService.cpp',
-    'nsXULAlerts.cpp',
-]
+if not CONFIG['MOZ_B2G']:
+  UNIFIED_SOURCES += [
+      'nsAlertsService.cpp',
+      'nsXULAlerts.cpp',
+  ]
 
 include('/ipc/chromium/chromium-config.mozbuild')
 

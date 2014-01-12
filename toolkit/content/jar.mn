@@ -10,6 +10,11 @@ toolkit.jar:
 *  content/global/xul.css                     (xul.css)
    content/global/textbox.css                 (textbox.css)
    content/global/menulist.css                (menulist.css)
+   content/global/directionDetector.html
+   content/global/plugins.html
+   content/global/plugins.css
+   content/global/devicestorage.properties    (devicestorage.properties)
+#ifndef MOZ_B2G
    content/global/about.xhtml                 (about.xhtml)
    content/global/aboutAbout.xhtml            (aboutAbout.xhtml)
    content/global/aboutRights.xhtml           (aboutRights.xhtml)
@@ -21,9 +26,6 @@ toolkit.jar:
 *  content/global/aboutTelemetry.js
    content/global/aboutTelemetry.xhtml
    content/global/aboutTelemetry.css          (aboutTelemetry.css)
-   content/global/directionDetector.html
-   content/global/plugins.html
-   content/global/plugins.css
    content/global/browser-child.js            (browser-child.js)
 *+  content/global/buildconfig.html            (buildconfig.html)
 +  content/global/charsetOverlay.js           (charsetOverlay.js)
@@ -34,7 +36,6 @@ toolkit.jar:
    content/global/customizeToolbar.css        (customizeToolbar.css)
 *  content/global/customizeToolbar.js         (customizeToolbar.js)
    content/global/customizeToolbar.xul        (customizeToolbar.xul)
-   content/global/devicestorage.properties    (devicestorage.properties)
    content/global/editMenuOverlay.js          (editMenuOverlay.js)
 *+ content/global/editMenuOverlay.xul         (editMenuOverlay.xul)
    content/global/finddialog.js               (finddialog.js)
@@ -42,8 +43,6 @@ toolkit.jar:
    content/global/findUtils.js                (findUtils.js)
    content/global/filepicker.properties       (filepicker.properties)
 *+ content/global/globalOverlay.js            (globalOverlay.js)
-+  content/global/mozilla.xhtml               (mozilla.xhtml)
-   content/global/nsDragAndDrop.js            (nsDragAndDrop.js)
    content/global/resetProfile.css            (resetProfile.css)
    content/global/resetProfile.js             (resetProfile.js)
    content/global/resetProfile.xul            (resetProfile.xul)
@@ -51,6 +50,8 @@ toolkit.jar:
    content/global/select-child.js             (select-child.js)
    content/global/treeUtils.js                (treeUtils.js)
    content/global/viewZoomOverlay.js          (viewZoomOverlay.js)
++  content/global/mozilla.xhtml               (mozilla.xhtml)
+   content/global/nsDragAndDrop.js            (nsDragAndDrop.js)
 *+ content/global/bindings/autocomplete.xml    (widgets/autocomplete.xml)
    content/global/bindings/browser.xml         (widgets/browser.xml)
    content/global/bindings/button.xml          (widgets/button.xml)
@@ -76,8 +77,6 @@ toolkit.jar:
    content/global/bindings/remote-browser.xml  (widgets/remote-browser.xml)
    content/global/bindings/resizer.xml         (widgets/resizer.xml)
    content/global/bindings/richlistbox.xml     (widgets/richlistbox.xml)
-   content/global/bindings/scale.xml           (widgets/scale.xml)
-   content/global/bindings/scrollbar.xml       (widgets/scrollbar.xml)
    content/global/bindings/scrollbox.xml       (widgets/scrollbox.xml)
    content/global/bindings/splitter.xml        (widgets/splitter.xml)
    content/global/bindings/spinbuttons.xml     (widgets/spinbuttons.xml)
@@ -91,7 +90,10 @@ toolkit.jar:
 *+ content/global/bindings/videocontrols.xml   (widgets/videocontrols.xml)
    content/global/bindings/videocontrols.css   (widgets/videocontrols.css)
 *+ content/global/bindings/wizard.xml          (widgets/wizard.xml)
+#endif
 #ifdef XP_MACOSX
    content/global/macWindowMenu.js             (macWindowMenu.js)
 #endif
+   content/global/bindings/scale.xml           (widgets/scale.xml)
+   content/global/bindings/scrollbar.xml       (widgets/scrollbar.xml)
    content/global/svg/svgBindings.xml          (/layout/svg/resources/content/svgBindings.xml)

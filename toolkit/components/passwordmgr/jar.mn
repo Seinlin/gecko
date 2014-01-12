@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifndef MOZ_B2G
 toolkit.jar:
 %   content passwordmgr %content/passwordmgr/
 *   content/passwordmgr/passwordManager.xul            (content/passwordManager.xul)
@@ -9,3 +10,4 @@ toolkit.jar:
     content/passwordmgr/passwordManagerExceptions.js   (content/passwordManagerExceptions.js)
     content/passwordmgr/passwordManagerExceptions.xul  (content/passwordManagerExceptions.xul)
     content/passwordmgr/passwordManagerCommon.js       (content/passwordManagerCommon.js)
+#endif

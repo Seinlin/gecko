@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifndef MOZ_B2G
 toolkit.jar:
 % content mozapps %content/mozapps/
   content/mozapps/downloads/helperApps.js                       (content/helperApps.js)
@@ -11,3 +12,4 @@ toolkit.jar:
   content/mozapps/downloads/DownloadProgressListener.js         (content/DownloadProgressListener.js)
   content/mozapps/downloads/downloads.css                       (content/downloads.css)
   content/mozapps/downloads/download.xml                        (content/download.xml)
+#endif

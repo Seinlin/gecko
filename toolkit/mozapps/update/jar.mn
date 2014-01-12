@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifndef MOZ_B2G
 toolkit.jar:
 % content mozapps %content/mozapps/
   content/mozapps/update/history.xul                            (content/history.xul)
@@ -10,3 +11,4 @@ toolkit.jar:
   content/mozapps/update/updates.js                             (content/updates.js)
   content/mozapps/update/updates.xml                            (content/updates.xml)
   content/mozapps/update/updates.xul                            (content/updates.xul)
+#endif
